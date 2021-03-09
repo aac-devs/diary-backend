@@ -2,16 +2,14 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Note extends Model {
-    static associate(models) {
-      Note.belongsTo(models.User);
-    }
+    static associate(models) {}
   }
   Note.init(
     {
       title: DataTypes.STRING,
       body: DataTypes.STRING,
-      imageUrl: DataTypes.STRING,
       date: DataTypes.DATE,
+      uid: DataTypes.INTEGER,
     },
     {
       sequelize,
