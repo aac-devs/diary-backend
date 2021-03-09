@@ -4,7 +4,7 @@ const {
   create,
   update,
   remove,
-} = require("../controllers/note.controller");
+} = require("../controllers/notes.controller");
 const router = Router();
 
 router.get("/", getAll);

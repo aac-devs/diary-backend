@@ -7,8 +7,8 @@ class Server {
     this.app = express();
     this.port = process.env.PORT;
     this.paths = {
-      user: "/api/auth",
-      note: "/api/notes",
+      auth: "/api/auth",
+      notes: "/api/notes",
     };
 
     this.connectDB();
@@ -18,7 +18,7 @@ class Server {
 
   async connectDB() {
     try {
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ force: false });
       console.log("Postgresql database online");
     } catch (error) {
       console.log(error);
@@ -32,8 +32,8 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.paths.user, require("./routes/user.routes"));
-    this.app.use(this.paths.note, require("./routes/note.routes"));
+    this.app.use(this.paths.auth, require("./routes/auth.routes"));
+    this.app.use(this.paths.notes, require("./routes/notes.routes"));
   }
 
   listen() {
