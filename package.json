@@ -1,7 +1,7 @@
 {
-  "name": "agenda-backend",
+  "name": "diary-backend",
   "version": "1.0.0",
-  "description": "REST API for agenda-app",
+  "description": "REST API for diary-app",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
