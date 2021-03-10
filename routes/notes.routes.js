@@ -33,7 +33,11 @@ router.put(
   ],
   updateNote
 );
-router.delete("/:id", validateJWT, removeNote);
+router.delete(
+  "/:id",
+  [validateJWT, check("id").custom(existNoteId), validateFields],
+  removeNote
+);
 router.delete("/", validateJWT, removeAllNotes);
 
 module.exports = router;

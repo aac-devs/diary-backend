@@ -18,7 +18,6 @@ module.exports = {
 
   // Tabla en DB
   seederStorage: "sequelize",
-  // seederStoragePath: "sequelizeData.json",
   seederStorageTableName: "sequelize_data",
 
   define: {

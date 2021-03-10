@@ -5,8 +5,8 @@ const { generateJWT } = require("../helpers/jwt");
 
 module.exports = {
   userCreate: async (req = request, res = response) => {
-    const { email, password } = req.body;
     try {
+      const { email, password } = req.body;
       let user = await User.findOne({
         where: {
           email,
@@ -25,11 +25,12 @@ module.exports = {
       // Crear usuario en la base de datos
       const createdUser = await User.create(user);
       // Generar JWT
-      const token = await generateJWT(user.id, user.name);
+      const token = await generateJWT(createdUser.id, createdUser.name);
+      const { id: uid, name } = createdUser;
       res.status(201).json({
         ok: true,
-        uid: createdUser.id,
-        name: createdUser.name,
+        name,
+        uid,
         token,
       });
     } catch (error) {
@@ -40,13 +41,9 @@ module.exports = {
     }
   },
   userLogin: async (req = request, res = response) => {
-    const { email, password } = req.body;
     try {
-      const user = await User.findOne({
-        where: {
-          email,
-        },
-      });
+      const { email, password } = req.body;
+      const user = await User.findOne({ where: { email } });
       if (!user) {
         return res.status(400).json({
           ok: false,
@@ -77,8 +74,8 @@ module.exports = {
     }
   },
   userRenewToken: async (req = request, res = response) => {
-    const { uid, name } = req;
     try {
+      const { uid, name } = req;
       // Generar un nuevo JWT
       const token = await generateJWT(uid, name);
       res.json({

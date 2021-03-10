@@ -5,7 +5,8 @@ module.exports = {
   getNotes: async (req = request, res = response) => {
     try {
       const { uid } = req;
-      const notes = await Note.findAndCountAll(uid);
+      console.log(uid);
+      const notes = await Note.findAndCountAll({ where: { uid } });
       res.json({
         ok: true,
         notes,
@@ -19,8 +20,8 @@ module.exports = {
   },
   createNote: async (req = request, res = response) => {
     try {
-      const data = req.body;
-      data.uid = req.uid;
+      const { body, uid } = req;
+      const data = { ...body, uid };
       const note = await Note.create(data);
       res.status(201).json({
         ok: true,
@@ -34,31 +35,84 @@ module.exports = {
     }
   },
   updateNote: async (req = request, res = response) => {
-    // TODO: terminar de crear la ruta
-    const { id } = req.params;
-    const { title, body, date } = req.body;
-    const { uid } = req;
-
-    const note = await Note.update(
-      {
-        title,
+    try {
+      const {
+        params: { id },
         body,
-        date,
         uid,
-      },
-      {
-        where: {
-          id,
-        },
+      } = req;
+      const userNote = await Note.findByPk(id);
+      if (userNote.uid !== uid) {
+        return res.status(400).json({
+          ok: false,
+          msg: `Can't update a note from other user!`,
+        });
       }
-    );
-
-    res.json(note);
+      const data = { ...body, uid };
+      await Note.update(data, {
+        where: { id },
+      });
+      const note = await Note.findByPk(id);
+      res.json({
+        ok: true,
+        note,
+      });
+    } catch (error) {
+      res.status(500).json({
+        msg: "Something went wrong trying to access to database!",
+        error,
+      });
+    }
   },
   removeNote: async (req = request, res = response) => {
-    res.json("note - delete");
+    try {
+      const {
+        params: { id },
+        uid,
+      } = req;
+      const userNote = await Note.findByPk(id);
+      if (userNote.uid !== uid) {
+        return res.status(400).json({
+          ok: false,
+          msg: `Can't delete a note from other user!`,
+        });
+      }
+      await Note.destroy({
+        where: { id },
+      });
+      res.json({
+        ok: true,
+        msg: "Note deleted successfully!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        msg: "Something went wrong trying to access to database!",
+        error,
+      });
+    }
   },
   removeAllNotes: async (req = request, res = response) => {
-    res.json("note - delete all");
+    try {
+      const { uid } = req;
+      const notes = await Note.findAll({ where: { uid } });
+      if (notes.length === 0) {
+        return res.json({
+          ok: false,
+          msg: "There is not nothing to delete!",
+        });
+      }
+      await Note.destroy({
+        where: { uid },
+      });
+      res.json({
+        ok: true,
+        msg: "Notes deleted successfully!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        msg: "Something went wrong trying to access to database!",
+        error,
+      });
+    }
   },
 };
