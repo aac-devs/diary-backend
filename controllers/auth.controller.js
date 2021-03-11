@@ -78,6 +78,7 @@ module.exports = {
       const { uid, name } = req;
       // Generar un nuevo JWT
       const token = await generateJWT(uid, name);
+      console.log({ uid, name });
       res.json({
         ok: true,
         uid,
